@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+hello-world{
+  justify-items: center;
+  align-items: center;
+  flex: auto;
+}
