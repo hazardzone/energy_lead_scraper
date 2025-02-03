@@ -1,11 +1,13 @@
-// In app/api/leads/route.js
-import { getCachedLeads, cacheLeads } from '@/lib/cache';
+import { NextResponse } from 'next/server';
+import connectDB from '@/lib/db';
+import Lead from '@/models/lead';
 
 export async function GET() {
-  const cachedLeads = await getCachedLeads('energy-leads');
-  if (cachedLeads) return NextResponse.json(cachedLeads);
-
-  const leads = await Lead.find({});
-  await cacheLeads('energy-leads', leads);
-  return NextResponse.json(leads);
+  try {
+    await connectDB();
+    const leads = await Lead.find({});
+    return NextResponse.json(leads);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch leads' }, { status: 500 });
+  }
 }
