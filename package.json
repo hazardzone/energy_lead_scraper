@@ -21,6 +21,7 @@
     "cheerio": "^1.0.0",
     "esm": "^3.2.25",
     "ioredis": "^5.4.2",
+    "module-alias": "^2.2.3",
     "mongodb": "^6.13.0",
     "mongoose": "^8.9.6",
     "next": "15.1.6",
@@ -36,5 +37,8 @@
   "devDependencies": {
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17"
+  },
+  "_moduleAliases": {
+    "@": "src"
   }
 }
