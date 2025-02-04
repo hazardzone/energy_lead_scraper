@@ -63,7 +63,7 @@ export async function POST(request) {
         if (await detectSubsidyIntent(textToAnalyze)) {
           filteredLeads.push({
             ...lead,
-            keywords: ['subvention énergie'],
+            keywords: ['proprietes', 'energetiques'],
             status: 'uncontacted'
           });
         }

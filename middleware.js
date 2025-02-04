@@ -10,6 +10,12 @@ const ALLOWED_METHODS = {
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
+  const isWebSocketUpgrade = request.headers.get('upgrade')?.toLowerCase() === 'websocket';
+
+  // Directly pass WebSocket upgrade requests to the next middleware
+  if (isWebSocketUpgrade) {
+    return NextResponse.next();
+  }
 
   // 1. Block disallowed HTTP methods
   if (ALLOWED_METHODS[pathname] && !ALLOWED_METHODS[pathname].includes(request.method)) {
