@@ -1,65 +1,27 @@
 import { NextResponse } from 'next/server';
-import { rateLimiter } from '@/lib/rate-limiter'; // Custom rate limiter
-import { validateRequest } from '@/lib/request-validator'; // Request validation helper
 
-// Define allowed HTTP methods for each route
-const ALLOWED_METHODS = {
-  '/api/scrape': ['POST'],
-  '/api/leads': ['GET'],
-};
-
-export async function middleware(request) {
+export function middleware(request) {
   const { pathname } = request.nextUrl;
-  const isWebSocketUpgrade = request.headers.get('upgrade')?.toLowerCase() === 'websocket';
 
-  // Directly pass WebSocket upgrade requests to the next middleware
-  if (isWebSocketUpgrade) {
+  // Allow the root route (/) to bypass middleware
+  if (pathname === '/') {
     return NextResponse.next();
   }
 
-  // 1. Block disallowed HTTP methods
-  if (ALLOWED_METHODS[pathname] && !ALLOWED_METHODS[pathname].includes(request.method)) {
-    return NextResponse.json(
-      { error: `Method ${request.method} not allowed for ${pathname}` },
-      { status: 405 }
-    );
+  // Apply middleware to API routes
+  if (pathname.startsWith('/api')) {
+    // Add security headers or other logic here
+    const response = NextResponse.next();
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    return response;
   }
 
-  // 2. Apply rate limiting to the /api/scrape endpoint
-  if (pathname === '/api/scrape') {
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
-    const isRateLimited = await rateLimiter(ip);
-
-    if (isRateLimited) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-    }
-  }
-
-  // 3. Validate incoming requests for /api/scrape
-  if (pathname === '/api/scrape' && request.method === 'POST') {
-    const validationError = await validateRequest(request);
-    if (validationError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: validationError },
-        { status: 400 }
-      );
-    }
-  }
-
-  // 4. Add security headers to all responses
-  const response = NextResponse.next();
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-  return response;
+  // Log unmatched requests
+  console.warn(`Unmatched request: ${pathname}`);
+  return NextResponse.json({ error: 'Route not found' }, { status: 404 });
 }
 
 // Apply middleware to specific routes
 export const config = {
-  matcher: ['/api/scrape', '/api/leads'],
+  matcher: ['/api/:path*'], // Only apply to /api routes
 };

@@ -59,7 +59,7 @@ export default function LeadTable() {
         {/* Table Body */}
         <tbody>
           {leads.map((lead) => (
-            <tr key={lead._id} className="border-b md:table-row block md:grid md:grid-cols-5">
+            <tr key={lead._id} className="border-b block md:grid md:grid-cols-5">
               {/* Name */}
               <td className="p-3 md:border-r md:border-b-0 border-b border-gray-200">
                 <span className="hidden md:inline">Name:</span> {lead.name}
