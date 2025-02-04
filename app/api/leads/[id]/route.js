@@ -3,11 +3,29 @@ import connectDB from '@/lib/db';
 import Lead from '@/models/lead';
 
 export async function PUT(request, { params }) {
-  const { id } = params;
-  const { status } = await request.json();
+  try {
+    console.log('Handling PUT request for /leads/[id]');
 
-  await connectDB();
-  const lead = await Lead.findByIdAndUpdate(id, { status }, { new: true });
+    const { id } = params;
+    const { status } = await request.json();
 
-  return NextResponse.json(lead);
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+    }
+
+    await connectDB();
+
+    // Update the lead's status
+    const lead = await Lead.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!lead) {
+      return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    }
+
+    console.log(`Updated lead with ID: ${id}`);
+    return NextResponse.json(lead);
+  } catch (error) {
+    console.error('Error updating lead:', error);
+    return NextResponse.json({ error: 'Failed to update lead' }, { status: 500 });
+  }
 }
