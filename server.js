@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const scrapeLeads = require('./scraper');
+const scrapeLeads = require('./scraper'); // Ensure the path is correct
 
 const app = express();
 const port = 3001;
