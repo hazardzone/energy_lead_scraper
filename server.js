@@ -6,7 +6,7 @@ const scraper = require('./lib/scraper'); // Ensure the path is correct
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 3001; // Use PORT from env or default to 3001
+const port = process.env.PORT || 3000; // Use PORT from env or default to 3001
 
 // Middleware
 app.use(cors()); // Enable Cross-Origin Resource Sharing

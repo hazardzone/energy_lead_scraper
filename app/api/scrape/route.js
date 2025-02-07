@@ -6,6 +6,7 @@ import { detectSubsidyIntent } from '@/lib/scraper';
 import { z } from 'zod';
 
 // Input validation schema
+
 const ScrapeSchema = z.object({
   location: z.string().min(2).max(100),
   maxPages: z.number().int().min(1).max(5).default(1)

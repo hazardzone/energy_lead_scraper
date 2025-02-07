@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'test_app_for_leads'
+        DOCKER_REGISTRY = 'https://hub.docker.com/u/c110311904'
+        SONARQUBE_SCANNER = '/opt/sonar-scanner/bin/sonar-scanner'
+        K8S_DEPLOYMENT_FILE = 'k8s/deployment.yaml'
+        GITHUB_REPO = 'https://github.com/hazardzone/energy_lead_scraper'
+        SONARQUBE_PROJECT_KEY = 'sqp_82dfa2d65a3fab2c57a1428767647b78c98c67b5'
+        SONARQUBE_URL = 'http://localhost:9000'
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: "${GITHUB_REPO}", branch: 'master'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Ensure Java 17 is being used
+                    sh 'java -version'
+
+                    // Change permissions for SonarScanner
+                    sh 'chmod +x ${SONARQUBE_SCANNER}'
+
+                    // Run SonarQube scan with the correct server URL
+                    sh "${SONARQUBE_SCANNER} -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=${SONARQUBE_URL}"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image
+                    sh """
+                        docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest .
+                        docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Deploy to Kubernetes
+                    sh """
+                        kubectl apply -f ${K8S_DEPLOYMENT_FILE}
+                    """
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    // Clean up unused Docker images
+                    sh 'docker system prune -f'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment was successful!'
+        }
+
+        failure {
+            echo 'There was an error during the deployment.'
+        }
+    }
+}
