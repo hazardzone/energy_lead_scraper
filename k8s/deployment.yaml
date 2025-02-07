@@ -64,28 +64,49 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: energy_lead_scraper
+  name: energy-lead-scraper
 spec:
-  replicas: 2
+  replicas: 3  # Increase replicas for high availability
   selector:
     matchLabels:
-      app: energy_lead_scraper
+      app: energy-lead-scraper
   template:
     metadata:
       labels:
-        app: energy_lead_scraper
+        app: energy-lead-scraper
     spec:
       containers:
-      - name: energy_lead_scraper
-        image: hazardzone/nextjs-app:latest # Replace with your Docker image
+      - name: energy-lead-scraper
+        image: energy_lead_scraper:latest  # Replace with your Docker image
         ports:
         - containerPort: 3000
         env:
+        - name: NODE_ENV
+          value: "production"
         - name: MONGODB_URI
           valueFrom:
             secretKeyRef:
               name: mongo-secret
               key: mongo-url
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
 
 ---
 # Service for Next.js Application
