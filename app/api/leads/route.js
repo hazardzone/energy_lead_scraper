@@ -12,6 +12,10 @@ export async function GET(request) {
 
     // Extract query parameter (optional)
     const query = request.nextUrl.searchParams.get('query') || 'restaurants'; // Default query
+    if (!query.trim()) {
+      console.warn('Query parameter is missing or invalid');
+      return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
+    }
     console.log(`Scraping leads for query: ${query}`);
 
     // Scrape new leads based on the query

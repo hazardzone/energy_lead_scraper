@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-100">
@@ -6,7 +8,7 @@ export default function DashboardLayout({ children }) {
           <h1 className="text-3xl font-bold text-gray-900">Energy Leads Dashboard</h1>
         </div>
       </header>
-      <main>{children}</main>
+      <main role="main">{children}</main>
     </div>
   );
 }
