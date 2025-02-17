@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     
     const [leads, total] = await Promise.all([
       Lead.find(query)
-        .sort(sortField)
+        // .sort(sortField)
         .skip(skip)
         .limit(params.limit)
         .select('-__v')

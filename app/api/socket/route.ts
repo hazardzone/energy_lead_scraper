@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { Server as SocketServer } from 'socket.io';
+// import { Server as SocketServer } from 'socket.io';
 import type { Server as HTTPServer } from 'http';
 import type { NextApiRequest } from 'next';
 import type { Socket as NetSocket } from 'net';
 import type { Server as IOServer } from 'socket.io';
 import { z } from 'zod';
-import { scrapeLeads } from '@/lib/scraper';
+import { scrapeLeads } from '../../../lib/scraper';
 
 interface SocketServer extends HTTPServer {
   io?: IOServer;
