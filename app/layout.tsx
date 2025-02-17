@@ -1,7 +1,7 @@
-import React from 'react';
 import { connectDB } from '../lib/db';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Energy Lead Generator',
@@ -34,9 +34,11 @@ export default async function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body>
-        <main>
-          {children}
-        </main>
+        <ErrorBoundary>
+          <main>
+            {children}
+          </main>
+        </ErrorBoundary>
       </body>
     </html>
   );

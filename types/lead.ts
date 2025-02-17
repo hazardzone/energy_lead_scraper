@@ -1,13 +1,17 @@
 export interface Lead {
-  _id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  source: string;
-  createdAt: string;
-  status: 'uncontacted' | 'contacted' | 'converted';
-  updatedAt?: string;
+  id: string;
+  companyName: string;
+  employeeCount?: number;
+  revenue?: string;
+  industry?: string;
+  contactInfo?: {
+    email?: string;
+    phone?: string;
+  };
+  dateAdded: string;
+  lastUpdated: string;
+  status: 'new' | 'contacted' | 'qualified' | 'converted';
+  score?: number;
 }
 
 export interface LeadResponse {
